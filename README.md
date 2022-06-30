@@ -30,3 +30,5 @@ int main(char** argv)
     return 0;
 }
 ```
+
+Now compile this once with `cc cbuild.c -o cbuild` after that cbuild will compile its self if necessary
