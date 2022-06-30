@@ -31,4 +31,4 @@ int main(char** argv)
 }
 ```
 
-Now compile this once with `cc cbuild.c -o cbuild` after that cbuild will compile its self if necessary
+Now compile this once with `cc cbuild.c -o cbuild` after that cbuild will compile itself if necessary
