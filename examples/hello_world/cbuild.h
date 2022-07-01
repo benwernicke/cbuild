@@ -176,7 +176,7 @@ void compile_object_directory(char* out, char* flags, char* path)
         if (entry->d_type == DT_DIR) {
             fprintf(stderr, RED "warning: " RESET "possible error found: %s is directory %s is not recusive\n", entry->d_name, __func__);
             continue;
-        } else if (entry->d_type = DT_REG) {
+        } else if (entry->d_type == DT_REG) {
             len = strlen(entry->d_name) + strlen(path);
             if (is_objfile_(entry->d_name, len - strlen(path))) {
                 if (cmd_used + len + 1 >= cmd_len) {
