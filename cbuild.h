@@ -18,26 +18,34 @@
 #define CBUILD_BUILD_DIR "cbuild_build"
 #endif
 
-#ifdef __clang__
+#ifndef COMPILER
+
+#if defined(__clang__)
 #define COMPILER "clang"
-#endif
 
-#ifndef __clang__
-#ifdef __GNUC__
+#elif defined (__GNUG__)
+#define COMPILER "g++"
+
+#elif defined(__GNUC__)
 #define COMPILER "gcc"
-#endif
 
-#ifdef __MSVC_VER__
+#elif defined(__MSVC_VER__)
 #define COMPILER "msvc"
+
+#elif defined(__TINYC__)
+#define COMPILER "tcc"
+
+#elif defined(__MINGW32__)
+#define COMPILER "mingw"
+
+#elif defined(__MINGW64__)
+#define COMPILER "mingw"
+
 #endif
 
 // TODO: mingw
 
-#endif
-
-#ifndef COMPILER
-#define COMPILER "gcc"
-#endif
+#endif // COMPILER
 
 #ifndef CBUILD_EXE
 #define CBUILD_EXE "cbuild"

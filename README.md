@@ -5,7 +5,7 @@ a build tool which is only dependent on libc and a c compiler
 
 cbuild.h will detect which compiler was used to compile it and use it to compile the given source files.
 
-This feature is supported for `gcc, clang, msvc`
+This feature is supported for `gcc, clang, msvc, tcc, mingw`
 
 ---
 
