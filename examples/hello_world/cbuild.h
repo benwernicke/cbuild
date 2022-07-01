@@ -1,5 +1,7 @@
 #ifndef CBUILD_H
 #define CBUILD_H
+#include <dirent.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,7 +25,7 @@
 #if defined(__clang__)
 #define COMPILER "clang"
 
-#elif defined (__GNUG__)
+#elif defined(__GNUG__)
 #define COMPILER "g++"
 
 #elif defined(__GNUC__)
@@ -34,6 +36,13 @@
 
 #elif defined(__TINYC__)
 #define COMPILER "tcc"
+
+#elif defined(__MINGW32__)
+#define COMPILER "mingw"
+
+#elif defined(__MINGW64__)
+#define COMPILER "mingw"
+
 #endif
 
 // TODO: mingw
@@ -131,6 +140,58 @@ void auto_update()
             printf(RED "error: " RESET "while compiling %s\n", CBUILD_SRC);
         }
     }
+}
+
+static bool is_objfile_(char* name, uint64_t len)
+{
+    if (name[len - 2] != '.') {
+        return 0;
+    }
+    if (name[len - 1] != 'o') {
+        return 0;
+    }
+    return 1;
+}
+
+void compile_object_directory(char* out, char* flags, char* path)
+{
+    DIR* dir = opendir(path);
+    if (dir == NULL) {
+        fprintf(stderr, RED "error: " RESET "could not open dir: %s, %s\n", path, strerror(errno));
+    }
+    struct dirent* entry = NULL;
+    uint64_t cmd_len = strlen(COMPILER) + strlen(out) + 256 + strlen(flags);
+    uint64_t cmd_used = cmd_len - 256;
+    char* cmd = malloc(cmd_len);
+    strcpy(cmd, COMPILER);
+    strcat(cmd, " -o ");
+    strcat(cmd, out);
+    strcat(cmd, " ");
+    strcat(cmd, flags);
+    uint64_t len;
+    while ((entry = readdir(dir)) != NULL) {
+        if (strcmp(entry->d_name, "..") == 0 || strcmp(entry->d_name, ".") == 0) {
+            continue;
+        }
+        if (entry->d_type == DT_DIR) {
+            fprintf(stderr, RED "warning: " RESET "possible error found: %s is directory %s is not recusive\n", entry->d_name, __func__);
+            continue;
+        } else if (entry->d_type = DT_REG) {
+            len = strlen(entry->d_name) + strlen(path);
+            if (is_objfile_(entry->d_name, len - strlen(path))) {
+                if (cmd_used + len + 1 >= cmd_len) {
+                    cmd_len <<= 1;
+                    cmd = realloc(cmd, cmd_len);
+                }
+                cmd_used += len + 1;
+                strcat(cmd, " ");
+                strcat(cmd, path);
+                strcat(cmd, entry->d_name);
+            }
+        }
+    }
+    printf(GREEN "compiling: " RESET "%s\n", cmd);
+    system(cmd);
 }
 
 static int run_command_(char* comp, ...)

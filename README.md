@@ -13,7 +13,7 @@ This feature is supported for `gcc, clang, msvc, tcc, mingw`
 compile_object(char* src, char* flags, char* obj);
 compile_object("main.c", "-g -Wall -pedantic", "main.o");
 ```
-Compile a source file to an object file. Will only compile if source file was updated since last compilation
+Compile a source file to an object file. Will only compile if source file was updated since last compilation.
 
 ---
 
@@ -22,6 +22,16 @@ compile(char* out, ...);
 compile("main", "-Wall", "-g -pedantic", "main.o", "add.o");
 ```
 Compile given file with given flags. This function just constructs associated compile command with the parameters given.
+
+---
+
+```
+compile_object_directory(char* out, char* flags, char* path);
+compile_object_directory("main", "-Ofast", "build/");
+
+```
+
+This function will compile every object file in `path` to executable `out`.
 
 ---
 
