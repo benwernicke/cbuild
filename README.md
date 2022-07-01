@@ -7,6 +7,8 @@ cbuild.h will detect which compiler was used to compile it and use it to compile
 
 This feature is supported for `gcc, clang, msvc`
 
+---
+
 ```
 compile_object(char* src, char* flags, char* obj);
 compile_object("main.c", "-g -Wall -pedantic", "main.o");
