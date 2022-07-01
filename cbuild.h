@@ -1,6 +1,7 @@
 #ifndef CBUILD_H
 #define CBUILD_H
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +9,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdbool.h>
 
 #define GREEN "\033[32m"
 #define RESET "\033[39m"
@@ -50,8 +50,7 @@
 #define run_command(comp, ...) run_command_(comp, __VA_ARGS__, NULL)
 void auto_update();
 void compile_object(char* path, char* flags, char* obj);
-void compile_src(char* out, ...);
-#define compile_src(out, ...) print_comp_command_(COMPILER, "-o", out, __VA_ARGS__, NULL), run_command_(COMPILER, "-o", out, __VA_ARGS__, NULL)
+#define compile(out, ...) print_comp_command_(COMPILER, "-o", out, __VA_ARGS__, NULL), run_command_(COMPILER, "-o", out, __VA_ARGS__, NULL)
 
 #endif
 #ifdef CBUILD
@@ -83,16 +82,27 @@ static void print_comp_command_(char* comp, ...)
 static int run_command_(char* comp, ...);
 static long file_last_mod(char* path);
 
+static bool file_exists(char* path)
+{
+    FILE* f = fopen(path, "r");
+    if (f == NULL) {
+        return 0;
+    } else {
+        fclose(f);
+        return 1;
+    }
+}
+
 void compile_object(char* path, char* flags, char* obj)
 {
     time_t last_mod_src = file_last_mod(path);
     time_t last_mod_obj = file_last_mod(obj);
-    bool exists = access(path, F_OK) != 0;
+    bool exists = file_exists(obj);
 
     if (!exists || last_mod_src > last_mod_obj) {
         printf(GREEN "compiling: " RESET "%s -o %s -c %s\n", COMPILER, obj, path);
         if (run_command(COMPILER, "-o", obj, "-c", path) != 0) {
-            printf(RED "error: " RESET "while compiling %s\n", path);
+            exit(1);
         }
     }
 }
