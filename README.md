@@ -2,33 +2,28 @@
 a build tool which is only dependent on libc and a c compiler
 
 ## USAGE
+
+cbuild.h will detect which compiler was used to compile it and use it to compile the given source files.
+
+This feature is supported for `gcc, clang, msvc`
+
 ```
-#define CBUILD
-#include "cbuild.h"
-
-#include <string.h> // for strcmp()
-#include <stdlib.h> // for system()
-
-#define FLAGS "-g -Wall -pedantic"
-
-int main(char** argv)
-{
-    auto_update(); //will recompile cbuild.c if changes were made
-
-    //compile every src file to an object file
-    compile_object("main.c", FLAGS, "main.o"); //will only compile if main.c changed
-    compile_object("lib1.c", FLAGS, lib1.o); //will only compile if lib1.c changed
-
-    //compile object files to main executable
-    compile_src("main", FLAGS, "main.o", lib1.o); //will always run
-
-    //because this is a c program you can do something like this
-    if(strcmp(argv[1], "run") == 0) { 
-        system("./main");
-    }
-
-    return 0;
-}
+compile_object(char* src, char* flags, char* obj);
+compile_object("main.c", "-g -Wall -pedantic", "main.o");
 ```
+Compile a source file to an object file. Will only compile if source file was updated since last compilation
 
-Now compile this once with `cc cbuild.c -o cbuild` after that cbuild will compile itself if necessary
+---
+
+```
+compile(char* out, ...);
+compile("main", "-Wall", "-g -pedantic", "main.o", "add.o");
+```
+Compile given file with given flags. This function just constructs associated compile command with the parameters given.
+
+---
+
+```
+auto_update();
+```
+The function `auto_update()` will automatically recompile `cbuild.c` if its source was altered
