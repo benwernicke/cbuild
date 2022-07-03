@@ -111,7 +111,7 @@ void compile_object(char* path, char* flags, char* obj)
 
     if (!exists || last_mod_src > last_mod_obj) {
         printf(GREEN "compiling: " RESET "%s -o %s -c %s\n", COMPILER, obj, path);
-        if (run_command(COMPILER, "-o", obj, "-c", path) != 0) {
+        if (run_command(COMPILER, "-o", obj, "-c", path, flags) != 0) {
             exit(1);
         }
     }
@@ -183,9 +183,12 @@ void compile_object_directory(char* out, char* flags, char* path)
                     cmd_len <<= 1;
                     cmd = realloc(cmd, cmd_len);
                 }
-                cmd_used += len + 1;
+                cmd_used += len + 2;
                 strcat(cmd, " ");
                 strcat(cmd, path);
+                if (path[strlen(path) - 1] != '/') {
+                    strcat(cmd, "/");
+                }
                 strcat(cmd, entry->d_name);
             }
         }
